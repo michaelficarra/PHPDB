@@ -41,6 +41,7 @@ function db_fetch_rows(){
 	while($row = mysql_fetch_array($result)) {
 		$ret[] = $row;
 	}
+	mysql_free_result($result);
 	return $ret;
 }
 
@@ -49,16 +50,17 @@ function db_fetch_row(){
 	$args = func_get_args();
 	$result = call_user_func_array('db_raw_query',$args);
 	if(!$result || !mysql_num_rows($result)) return null;
-	return mysql_fetch_array($result);
+	$ret = mysql_fetch_array($result);
+	mysql_free_result($result);
+	return $ret
 }
 
 # fetches the value of the first field in the first row of the result
 function db_fetch_field(){ $args = func_get_args(); return call_user_func_array('db_fetch_value',$args); }
 function db_fetch_value(){
 	$args = func_get_args();
-	$result = call_user_func_array('db_raw_query',$args);
-	if(!$result || !mysql_num_rows($result)) return null;
-	return current(mysql_fetch_row($result));
+	$result = call_user_func_array('db_fetch_row',$args);
+	return current($result);
 }
 
 # fetches a single column (the first one) as a numerically indexed array of values
@@ -71,6 +73,7 @@ function db_fetch_values(){
 	while($row = mysql_fetch_array($result)) {
 		$ret[] = $row[0];
 	}
+	mysql_free_result($result);
 	return $ret;
 }
 
