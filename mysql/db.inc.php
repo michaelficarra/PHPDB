@@ -27,10 +27,26 @@ function db_raw_query(){
 	return $result;
 }
 
-# pass-through functions for now
-function db_insert(){ $args = func_get_args(); return call_user_func_array('db_raw_query',$args); }
-function db_update(){ $args = func_get_args(); return call_user_func_array('db_raw_query',$args); }
-function db_delete(){ $args = func_get_args(); return call_user_func_array('db_raw_query',$args); }
+# perform an INSERT operation and return the LAST_INSERT_ID()
+function db_insert(){
+	$args = func_get_args();
+	$success = call_user_func_array('db_raw_query',$args);
+	return $success ? mysql_insert_id() : NULL;
+}
+
+# perform an UPDATE operation and return the affected rows
+function db_update(){
+	$args = func_get_args();
+	$success = call_user_func_array('db_raw_query',$args);
+	return $success ? mysql_affected_rows() : NULL;
+}
+
+# perform a DELETE operation and return the affected rows
+function db_delete(){
+	$args = func_get_args();
+	$success = call_user_func_array('db_raw_query',$args);
+	return $success ? mysql_affected_rows() : NULL;
+}
 
 # fetches all rows of the result, returning them as a numerically and associatively indexed array inside a numerically indexed array of rows
 function db_fetch_rows(){
